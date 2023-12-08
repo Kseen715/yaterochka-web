@@ -19,3 +19,4 @@
 .log*
 
 # other
+docker-push.ps1
