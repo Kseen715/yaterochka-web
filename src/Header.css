@@ -24,10 +24,12 @@ nav {
 
     /*   Cut the part of the backdrop that falls outside of <nav /> */
     --cutoff: calc(100% - var(--extended-by));
-    -webkit-mask-image: linear-gradient(to bottom,
+    --mask-uni: linear-gradient(to bottom,
             black 0,
             black var(--cutoff),
             transparent var(--cutoff));
+    -webkit-mask-image: var(--mask-uni);
+    mask-image: var(--mask-uni);
 }
 
 .bien-glass-edge {
