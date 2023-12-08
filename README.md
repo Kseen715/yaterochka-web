@@ -23,8 +23,5 @@ Docker-compose:
 
 Manual installation:
 ```
-    git clone https://github.com/Kseen715/yaterochka-web.git
-    cd yaterochka-web
-    npm install
-    npm start
+    git clone https://github.com/Kseen715/yaterochka-web.git && cd yaterochka-web && npm install && npm start
 ```
