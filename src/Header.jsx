@@ -7,7 +7,7 @@ export class Header extends Component {
                 <div class="bien-glass"></div>
                 <div class="bien-glass-edge"></div>
                 <div class='header'>
-                    <a class="logo-text">
+                    <a class="logo-text" href='/'>
                         ЯТёрочка
                     </a>
                     <button class="button-header">Точки</button>
