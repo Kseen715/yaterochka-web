@@ -20,3 +20,11 @@ Docker-compose:
           - 3000:3000
         restart: always
 ```
+
+Manual installation:
+```
+    git clone https://github.com/Kseen715/yaterochka-web.git
+    cd yaterochka-web
+    npm install
+    npm start
+```
