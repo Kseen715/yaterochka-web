@@ -17,6 +17,6 @@ services:
     image: kseen/yaterochka-web:latest
     container_name: yaterochka-web
     ports:
-      - 3000:3000
+      - 3000:3000 # Port for web application
     restart: always
 ```
