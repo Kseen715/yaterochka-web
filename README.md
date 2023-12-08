@@ -14,7 +14,7 @@ Docker-compose:
     version: '3'
     services:
       yaterochka-web:
-        image: kseen715/yaterochka-web:latest
+        image: kseen/yaterochka-web:latest
         container_name: yaterochka-web
         ports:
           - 3000:3000
