@@ -11,12 +11,12 @@ The project is a web application for a fictional company that sells random goods
 ## Usage
 Docker-compose:
 ```
-    version: '3'
-    services:
-      yaterochka-web:
-        image: kseen/yaterochka-web:latest
-        container_name: yaterochka-web
-        ports:
-          - 3000:3000
-        restart: always
+version: '3'
+services:
+  yaterochka-web:
+    image: kseen/yaterochka-web:latest
+    container_name: yaterochka-web
+    ports:
+      - 3000:3000
+    restart: always
 ```
