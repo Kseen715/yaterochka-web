@@ -12,6 +12,7 @@ nav {
 .bien-glass {
     position: absolute;
     inset: 0;
+    z-index: -0;
     /*   Extend the backdrop to the bottom for it to "collect the light" 
     outside of the nav */
     --extended-by: 100px;

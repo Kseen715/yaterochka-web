@@ -17,7 +17,7 @@ export const GlassBox = styled.div`
     --filter: blur(20px);
     -webkit-backdrop-filter: var(--filter);
     backdrop-filter: var(--filter);
-    pointer-events: none;
+    // pointer-events: none;
 
     /*   Cut the part of the backdrop that falls outside of <nav /> */
     --cutoff: calc(100% - var(--extended-by));
@@ -81,7 +81,7 @@ export const Heading = styled.p`
 `;
 
 export const GlassBorder = styled.div`
-    position: absolute;
+    position: relative;
     z-index: -1;
     left: 0;
     right: 0;
@@ -106,7 +106,8 @@ export const GlassBorder = styled.div`
     black var(--offset),
     transparent var(--offset)
     );
-    transform: rotate(180deg) translateY(-115px);
+    margin-bottom: -18px;
+    transform: rotate(180deg);
 `;
 
 export const FlippedBox = styled.div`
@@ -160,10 +161,10 @@ const Footer = () => {
                                 <FooterLink href="#">
                                     Анастасия
                                 </FooterLink>
-                                <FooterLink href="#">
+                                <FooterLink href="https://github.com/Kseen715">
                                     Денис
                                 </FooterLink>
-                                <FooterLink href="#">
+                                <FooterLink href="https://github.com/kotikgriga27">
                                     Дарья
                                 </FooterLink>
                             </Column>
