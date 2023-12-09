@@ -11,8 +11,13 @@ RUN npm install
 # Bundle app source
 COPY . .
 
+# Build prod
+RUN npm run build --production
+# Install server
+RUN npm install -g serve
+
 # Expose port 3000
 EXPOSE 3000
 
 # Run the app
-CMD [ "npm", "start" ]
+CMD [ "serve", "-s", "build"]
