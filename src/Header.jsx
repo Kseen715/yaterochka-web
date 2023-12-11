@@ -5,11 +5,11 @@ import Button from "react-bootstrap/Button";
 function Header() {
     const navigate = useNavigate();
     return (
-        <nav class="bien-nav">
-            <div class="bien-glass"></div>
-            <div class="bien-glass-edge"></div>
-            <div class='header'>
-                <a class="logo-text" href='/'>
+        <nav className="bien-nav">
+            <div className="bien-glass"></div>
+            <div className="bien-glass-edge"></div>
+            <div className='header'>
+                <a className="logo-text" href='/'>
                     ЯТёрочка
                 </a>
                 <Button className="button-header" id="buttons-places" onClick={() => navigate('/places')}>Точки</Button>

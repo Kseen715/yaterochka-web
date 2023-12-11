@@ -1,0 +1,49 @@
+:root {
+    --table-color-text: #ffffff;
+    --table-color-white-border: #ffffff88;
+    --table-color-icons: #ed493c;
+    --table-color-background: #191919;
+}
+
+.table-v {
+    width: 90vw;
+    margin: 0 auto;
+    color: var(--table-color-text);
+}
+
+.table-v-box {
+    height: 500;
+    width: 100%;
+    color: var(--table-color-text);
+}
+
+
+.MuiDataGrid-root {
+    background-color: var(--table-color-background);
+}
+
+.MuiDataGrid-main,
+.MuiToolbar-gutters,
+.MuiDataGrid-selectedRowCount {
+    color: var(--table-color-text);
+}
+
+.MuiDataGrid-withBorderColor {
+    border-color: var(--table-color-background);
+}
+
+
+.MuiSvgIcon-fontSizeMedium,
+.MuiSelect-iconStandard,
+.MuiSvgIcon-fontSizeSmall,
+.MuiSelect-icon,
+.MuiTablePagination-select,
+.MuiTablePagination-selectIcon,
+.MuiSvgIcon-root,
+.css-pqjvzy-MuiSvgIcon-root-MuiSelect-icon {
+    color: var(--table-color-white-border);
+}
+
+.css-ptiqhd-MuiSvgIcon-root {
+    color: var(--table-color-icons);
+}

@@ -1,8 +1,12 @@
 import React from "react";
 
 import Header from './Header';
+import TableV from './TableView';
 import Footer from './Footer';
 import Title from './Service';
+
+import { getData } from "./Service";
+import { initRows } from "./TableView";
 
 function Places() {
 
@@ -10,12 +14,15 @@ function Places() {
         <div className="App">
             {Title('Точки | ЯТёрочка')}
             <Header />
-            <div class="content" style={
+            <div className="content" style={
                 {
                     color: '#ffffff',
                 }
             }>
                 Places
+                <div className="table-v">
+                    {TableV(initRows)}
+                </div>
             </div>
             <Footer />
         </div >

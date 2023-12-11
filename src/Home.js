@@ -15,7 +15,7 @@ const Home = (props) => {
 
             <div class="content">
                 <img
-                    width={800}
+                    width={700}
                     src={Cat}
                     alt='cat'
                     class='cat'
