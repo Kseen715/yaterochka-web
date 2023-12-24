@@ -14,79 +14,93 @@ import {
     GridRowEditStopReasons,
 } from '@mui/x-data-grid';
 import {
-    randomCreatedDate,
-    randomTraderName,
     randomId,
-    randomArrayItem,
 } from '@mui/x-data-grid-generator';
 import './TableView.css';
 
-const roles = ['Market', 'Finance', 'Development'];
-const randomRole = () => {
-    return randomArrayItem(roles);
-};
+import { getData } from "./Service";
+import { useEffect } from "react";
+import axios from 'axios';
 
-export const initRows = [
-    {
-        id: randomId(),
-        name: randomTraderName(),
-        age: 25,
-        joinDate: randomCreatedDate(),
-        role: randomRole(),
-    },
-    {
-        id: randomId(),
-        name: randomTraderName(),
-        age: 36,
-        joinDate: randomCreatedDate(),
-        role: randomRole(),
-    },
-    {
-        id: randomId(),
-        name: randomTraderName(),
-        age: 19,
-        joinDate: randomCreatedDate(),
-        role: randomRole(),
-    },
-    {
-        id: randomId(),
-        name: randomTraderName(),
-        age: 28,
-        joinDate: randomCreatedDate(),
-        role: randomRole(),
-    },
-    {
-        id: randomId(),
-        name: randomTraderName(),
-        age: 23,
-        joinDate: randomCreatedDate(),
-        role: randomRole(),
-    },
-];
+let json_link;
+let csv_link;
 
 function EditToolbar(props) {
     const { setRows, setRowModesModel } = props;
 
     const handleClick = () => {
         const id = randomId();
-        setRows((oldRows) => [...oldRows, { id, name: '', age: '', isNew: true }]);
+        setRows((oldRows) => [...oldRows, { id, isNew: true }]);
         setRowModesModel((oldModel) => ({
             ...oldModel,
             [id]: { mode: GridRowModes.Edit, fieldToFocus: 'name' },
         }));
     };
-
     return (
         <GridToolbarContainer>
             <Button color="primary" startIcon={<AddIcon />} onClick={handleClick}>
-                Add record
+                Добавить запись
             </Button>
-        </GridToolbarContainer>
+            <div style={
+                {
+                    marginLeft: 'auto',
+                }
+            }>
+                <Button color="secondary" onClick={
+                    () => {
+                        window.location.href = json_link;
+                    }
+                }>
+                    Выгрузить в JSON
+                </Button>
+                <Button color="secondary" onClick={
+                    () => {
+                        window.location.href = csv_link;
+                    }
+                }>
+                    Выгрузить в CSV
+                </Button>
+                <Button color="primary" onClick={
+                    () => {
+                        window.location.href = 'http://localhost:8000/log/login/';
+                    }
+                }>
+                    Логин
+                </Button>
+                <Button color="primary" onClick={
+                    () => {
+                        window.location.href = 'http://localhost:8000/log/logout/';
+                    }
+                }>
+                    Выйти
+                </Button>
+            </div>
+        </GridToolbarContainer >
     );
 }
 
-export default function TableV(initialRows) {
-    const [rows, setRows] = React.useState(initialRows);
+function ConvertHashToInt(hash) {
+    let res = 0;
+    for (let i = 0; i < hash.length; i++) {
+        res += hash.charCodeAt(i);
+    }
+    return res;
+}
+
+export default function TableV(columns, subURL) {
+    const [rows, setRows] = React.useState([]);
+
+    useEffect(() => {
+        json_link = 'http://localhost:8000/get-json-data/' + subURL + '/';
+        csv_link = 'http://localhost:8000/get-csv-data/' + subURL + '/';
+        getData(subURL)
+            .then(res => {
+                // console.log(res);
+                setRows(res);
+            })
+            .catch(err => console.error(err));
+    }, []); // Empty array means this effect runs once on component mount
+    // const [rows, setRows] = React.useState(initialRows);
     const [rowModesModel, setRowModesModel] = React.useState({});
 
     const handleRowEditStop = (params, event) => {
@@ -99,12 +113,37 @@ export default function TableV(initialRows) {
         setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
     };
 
-    const handleSaveClick = (id) => () => {
+    function getCookie(name) {
+        const cookieArr = document.cookie.split(";");
+
+        for (let i = 0; i < cookieArr.length; i++) {
+            let cookiePair = cookieArr[i].split("=");
+
+            if (name === cookiePair[0].trim()) {
+                return decodeURIComponent(cookiePair[1]);
+            }
+        }
+
+        return null;
+    }
+
+    const handleSaveClick = (id) => async () => {
         setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
     };
 
     const handleDeleteClick = (id) => () => {
         setRows(rows.filter((row) => row.id !== id));
+
+
+        const response = axios({
+            method: 'destroy',
+            url: 'http://localhost:8000/' + subURL + '/' + id + '/',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            withCredentials: true
+        });
     };
 
     const handleCancelClick = (id) => () => {
@@ -119,9 +158,115 @@ export default function TableV(initialRows) {
         }
     };
 
+
+
     const processRowUpdate = (newRow) => {
         const updatedRow = { ...newRow, isNew: false };
         setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
+        console.log(updatedRow);
+        let row = updatedRow
+
+        const kal = {
+            'sel/employee': {
+                id: row.id,
+                job: row.job,
+                name: row.name,
+                phone: row.phone,
+                store_id: row.store_id
+            },
+            'sel/group': {
+                id: row.id,
+                type: row.type,
+                number: row.number,
+                product_id: row.product_id,
+                store_id: row.store_id
+            },
+            'sel/store': {
+                id: row.id,
+                store_name: row.store_name,
+                city: row.city,
+                address: row.address,
+                phone: row.phone
+            },
+            'sel/check': {
+                id: row.id,
+                date: row.date,
+                time: row.time,
+                total: row.total,
+                product_group_id: row.product_group_id,
+                store_id: row.store_id,
+                number_sold_group: row.number_sold_group
+            },
+            'sel/goods': {
+                id: row.id,
+                expiration_date: row.expiration_date,
+                price: row.price,
+            }
+        }
+
+        const kal2 = {
+            'sel/employee': {
+                id: ConvertHashToInt(row.id),
+                job: row.job,
+                name: row.name,
+                phone: row.phone,
+                store_id: row.store_id
+            },
+            'sel/group': {
+                id: ConvertHashToInt(row.id),
+                type: row.type,
+                number: row.number,
+                product_id: row.product_id,
+                store_id: row.store_id
+            },
+            'sel/store': {
+                id: ConvertHashToInt(row.id),
+                store_name: row.store_name,
+                city: row.city,
+                address: row.address,
+                phone: row.phone
+            },
+            'sel/check': {
+                id: ConvertHashToInt(row.id),
+                date: row.date,
+                time: row.time,
+                total: row.total,
+                product_group_id: row.product_group_id,
+                store_id: row.store_id,
+                number_sold_group: row.number_sold_group
+            },
+            'sel/goods': {
+                id: ConvertHashToInt(row.id),
+                expiration_date: row.expiration_date,
+                price: row.price,
+            }
+        }
+
+        let response;
+        if (!row.isNew && !isNaN(row.id)) {
+            response = axios({
+                method: 'update',
+                url: 'http://localhost:8000/' + subURL + '/' + row.id + '/',
+                data: kal[subURL],
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                withCredentials: true
+            });
+        } else {
+            response = axios({
+                method: 'post',
+                url: 'http://localhost:8000/' + subURL + '/',
+                data: kal2[subURL],
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                withCredentials: true
+            });
+        }
+
         return updatedRow;
     };
 
@@ -129,36 +274,11 @@ export default function TableV(initialRows) {
         setRowModesModel(newRowModesModel);
     };
 
-    const columns = [
-        { field: 'name', headerName: 'Name', width: 180, editable: true },
-        {
-            field: 'age',
-            headerName: 'Age',
-            type: 'number',
-            width: 80,
-            align: 'left',
-            headerAlign: 'left',
-            editable: true,
-        },
-        {
-            field: 'joinDate',
-            headerName: 'Join date',
-            type: 'date',
-            width: 180,
-            editable: true,
-        },
-        {
-            field: 'role',
-            headerName: 'Department',
-            width: 220,
-            editable: true,
-            type: 'singleSelect',
-            valueOptions: ['Market', 'Finance', 'Development'],
-        },
+    const columns_end = [
         {
             field: 'actions',
             type: 'actions',
-            headerName: 'Actions',
+            headerName: 'Действия',
             width: 100,
             cellClassName: 'actions',
             getActions: ({ id }) => {
@@ -166,17 +286,17 @@ export default function TableV(initialRows) {
 
                 if (isInEditMode) {
                     return [
-                        <GridActionsCellItem
-                            icon={<SaveIcon />}
-                            label="Save"
-                            sx={{
-                                color: 'primary.main',
-                            }}
-                            onClick={handleSaveClick(id)}
-                        />,
+                        // <GridActionsCellItem
+                        //     icon={<SaveIcon />}
+                        //     label="Сохранить"
+                        //     sx={{
+                        //         color: 'primary.main',
+                        //     }}
+                        //     onClick={handleSaveClick(id)}
+                        // />,
                         <GridActionsCellItem
                             icon={<CancelIcon />}
-                            label="Cancel"
+                            label="Отменить"
                             className="textPrimary"
                             onClick={handleCancelClick(id)}
                             color="inherit"
@@ -187,14 +307,14 @@ export default function TableV(initialRows) {
                 return [
                     <GridActionsCellItem
                         icon={<EditIcon />}
-                        label="Edit"
+                        label="Изменить запись"
                         className="textPrimary"
                         onClick={handleEditClick(id)}
                         color="inherit"
                     />,
                     <GridActionsCellItem
                         icon={<DeleteIcon />}
-                        label="Delete"
+                        label="Удалить запись"
                         onClick={handleDeleteClick(id)}
                         color="inherit"
                     />,
@@ -202,6 +322,8 @@ export default function TableV(initialRows) {
             },
         },
     ];
+
+    columns = columns.concat(columns_end);
 
     return (
         <Box className="table-v-box">

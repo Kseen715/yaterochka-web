@@ -13,7 +13,6 @@ import Goods from "./Goods";
 import History from "./History";
 
 
-
 function App() {
   return (
     <div>
