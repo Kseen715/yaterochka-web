@@ -11,6 +11,7 @@ import Workers from "./Workers";
 import Groups from "./Groups";
 import Goods from "./Goods";
 import History from "./History";
+import ErrPage from "./ErrPage";
 
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
         <Route path="/groups" element={<Groups />} />
         <Route path="/goods" element={<Goods />} />
         <Route path="/history" element={<History />} />
+        <Route path="/error" element={<ErrPage />} />
       </Routes>
     </div>
   );

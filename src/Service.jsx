@@ -47,5 +47,22 @@ export async function getData(midURL) {
     return response.data;
 }
 
+export async function getResp(midURL) {
+    const baseURL = `${apiURL}${midURL}${endURL}`;
+    const respons = await axios.get(`${baseURL}`, {
+        headers: {
+            headers,
+        },
+        withCredentials: true,
+    })
+        .then(response => {
+            return response;
+        })
+        .catch(error => {
+            return error.code;
+        });
+    return respons;
+}
+
 
 export default Title;

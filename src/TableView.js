@@ -18,16 +18,31 @@ import {
 } from '@mui/x-data-grid-generator';
 import './TableView.css';
 
-import { getData } from "./Service";
+import { getData, getResp } from "./Service";
 import { useEffect } from "react";
 import axios from 'axios';
 
 let json_link;
 let csv_link;
 
+
+
+
+
 function EditToolbar(props) {
     const { setRows, setRowModesModel } = props;
+    const [access, setAccess] = React.useState(false);
+    useEffect(() => {
+        getAccess()
+            .then(res => {
+                setAccess(res);
+            })
+            .catch(err => console.error(err));
+    }, []);
 
+    if (access === false) {
+        return <div>Загрузка...</div>;
+    }
     const handleClick = () => {
         const id = randomId();
         setRows((oldRows) => [...oldRows, { id, isNew: true }]);
@@ -36,44 +51,56 @@ function EditToolbar(props) {
             [id]: { mode: GridRowModes.Edit, fieldToFocus: 'name' },
         }));
     };
+
+    let btnAdd = (<Button color="primary" startIcon={<AddIcon />} onClick={handleClick}>
+        Добавить запись
+    </Button>);
+
+    let btnJSON = (<Button color="secondary" onClick={
+        () => {
+            window.location.href = json_link;
+        }
+    }>
+        Выгрузить в JSON
+    </Button>);
+
+    let btnCSV = (<Button color="secondary" onClick={
+        () => {
+            window.location.href = csv_link;
+        }
+    }>
+        Выгрузить в CSV
+    </Button>);
+
+    let btnLogin = (<Button color="primary" onClick={
+        () => {
+            window.location.href = 'http://localhost:8000/log/login/';
+        }
+    }>
+        Логин
+    </Button>);
+
+    let btnLogout = (<Button color="primary" onClick={
+        () => {
+            window.location.href = 'http://localhost:8000/log/logout/';
+        }
+    }>
+        Выйти
+    </Button>);
+
+    let none = (<div></div>);
+
     return (
         <GridToolbarContainer>
-            <Button color="primary" startIcon={<AddIcon />} onClick={handleClick}>
-                Добавить запись
-            </Button>
+            {access === 'ERR_BAD_RESPONSE' ? btnAdd : none}
             <div style={
                 {
                     marginLeft: 'auto',
                 }
             }>
-                <Button color="secondary" onClick={
-                    () => {
-                        window.location.href = json_link;
-                    }
-                }>
-                    Выгрузить в JSON
-                </Button>
-                <Button color="secondary" onClick={
-                    () => {
-                        window.location.href = csv_link;
-                    }
-                }>
-                    Выгрузить в CSV
-                </Button>
-                <Button color="primary" onClick={
-                    () => {
-                        window.location.href = 'http://localhost:8000/log/login/';
-                    }
-                }>
-                    Логин
-                </Button>
-                <Button color="primary" onClick={
-                    () => {
-                        window.location.href = 'http://localhost:8000/log/logout/';
-                    }
-                }>
-                    Выйти
-                </Button>
+                {access === 'ERR_BAD_RESPONSE' ? btnJSON : none}
+                {access === 'ERR_BAD_RESPONSE' ? btnCSV : none}
+                {access === 'ERR_BAD_RESPONSE' ? btnLogout : btnLogin}
             </div>
         </GridToolbarContainer >
     );
@@ -87,8 +114,16 @@ function ConvertHashToInt(hash) {
     return res;
 }
 
+async function getAccess() {
+    let status_resp = await getResp('user-status/');
+    console.log(status_resp);
+    return status_resp;
+}
+
 export default function TableV(columns, subURL) {
     const [rows, setRows] = React.useState([]);
+
+    const [access, setAccess] = React.useState(false);
 
     useEffect(() => {
         json_link = 'http://localhost:8000/get-json-data/' + subURL + '/';
@@ -99,9 +134,36 @@ export default function TableV(columns, subURL) {
                 setRows(res);
             })
             .catch(err => console.error(err));
+
     }, []); // Empty array means this effect runs once on component mount
     // const [rows, setRows] = React.useState(initialRows);
     const [rowModesModel, setRowModesModel] = React.useState({});
+
+
+    useEffect(() => {
+        getAccess()
+            .then(res => {
+                setAccess(res);
+            })
+            .catch(err => console.error(err));
+    }, []);
+
+    if (access === false) {
+        return <div>Загрузка...</div>;
+    }
+
+    //     ERR_BAD_RESPONSE = in
+    //     ERR_BAD_REQUEST = out
+
+
+    // if (status_resp === "\"ERR_BAD_RESPONSE\"") {
+    //     access = true;
+    // } else if (status_resp === "\"ERR_BAD_REQUEST\"") {
+    //     access = false;
+    // }
+    console.log(access); // This will print the boolean value
+
+
 
     const handleRowEditStop = (params, event) => {
         if (params.reason === GridRowEditStopReasons.rowFocusOut) {
@@ -278,7 +340,7 @@ export default function TableV(columns, subURL) {
         {
             field: 'actions',
             type: 'actions',
-            headerName: 'Действия',
+            headerName: '',
             width: 100,
             cellClassName: 'actions',
             getActions: ({ id }) => {
@@ -304,14 +366,18 @@ export default function TableV(columns, subURL) {
                     ];
                 }
 
+                if (access !== 'ERR_BAD_RESPONSE') {
+                    return [];
+                }
+
                 return [
-                    <GridActionsCellItem
-                        icon={<EditIcon />}
-                        label="Изменить запись"
-                        className="textPrimary"
-                        onClick={handleEditClick(id)}
-                        color="inherit"
-                    />,
+                    // <GridActionsCellItem
+                    //     icon={<EditIcon />}
+                    //     label="Изменить запись"
+                    //     className="textPrimary"
+                    //     onClick={handleEditClick(id)}
+                    //     color="inherit"
+                    // />,
                     <GridActionsCellItem
                         icon={<DeleteIcon />}
                         label="Удалить запись"
@@ -325,13 +391,22 @@ export default function TableV(columns, subURL) {
 
     columns = columns.concat(columns_end);
 
+    let editMode;
+
+    if (access === 'ERR_BAD_RESPONSE') {
+        editMode = 'row';
+    } else {
+        editMode = 'none';
+    }
+
+
     return (
         <Box className="table-v-box">
             <DataGrid
                 className="table-v-grid"
                 rows={rows}
                 columns={columns}
-                editMode="row"
+                editMode={editMode}
                 rowModesModel={rowModesModel}
                 onRowModesModelChange={handleRowModesModelChange}
                 onRowEditStop={handleRowEditStop}
