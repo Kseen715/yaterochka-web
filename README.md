@@ -1,4 +1,4 @@
-# YaTёrochka-WEB
+# YaTёrochka-web
 <p align="center">
   <img src="https://raw.githubusercontent.com/Kseen715/imgs/main/favicon.ico" />
 </p>
@@ -17,6 +17,6 @@ services:
     image: kseen/yaterochka-web:latest
     container_name: yaterochka-web
     ports:
-      - 3000:3000 # Port for web application
-    restart: always
+      - '3000:3000'
+    restart: unless-stopped
 ```
